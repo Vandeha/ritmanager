@@ -62,55 +62,78 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
   <div id="calib" class="warn" hidden></div>
   <section class="card">
     <div class="stats">
-      <div><small>Afstand (GPS)</small><b id="km">0,0</b></div>
-      <div><small>Tijd</small><b id="time">00:00</b></div>
-      <div><small>GPS-precisie</small><b id="acc">–</b></div>
+      <div><small data-i="dist"></small><b id="km">0,0</b></div>
+      <div><small data-i="time"></small><b id="time">00:00</b></div>
+      <div><small data-i="prec"></small><b id="acc">–</b></div>
     </div>
     <button id="main" class="main">START RIT</button>
     <p id="note" class="note"></p>
   </section>
   <section class="card tot">
-    <div class="row"><b>Kilometers</b><select id="per"><option value="y">Dit jaar</option><option value="m">Deze maand</option><option value="a">Alles</option></select></div>
-    <div class="stats"><div><small>Zakelijk</small><b id="tZ">0</b></div><div><small>Privé</small><b id="tP">0</b></div><div><small>Totaal</small><b id="tT">0</b></div></div>
+    <div class="row"><b data-i="km"></b><select id="per"><option value="y" data-i="yr"></option><option value="m" data-i="mo"></option><option value="a" data-i="al"></option></select></div>
+    <div class="stats"><div><small data-i="biz"></small><b id="tZ">0</b></div><div><small data-i="prv"></small><b id="tP">0</b></div><div><small data-i="tot"></small><b id="tT">0</b></div></div>
   </section>
-  <div class="row"><h2>Ritten</h2>
-    <div><button class="sm" id="bCsv">CSV</button><button class="sm" id="bJson">Backup</button><label class="sm">Herstel<input type="file" id="fImp" accept=".json,application/json" hidden></label></div>
+  <div class="row"><h2 data-i="trips"></h2>
+    <div><button class="sm" id="bCsv">CSV</button><button class="sm" id="bJson" data-i="backup"></button><label class="sm"><span data-i="restore"></span><input type="file" id="fImp" accept=".json,application/json" hidden></label></div>
   </div>
   <div id="list"></div>
 </div>
 
 <div class="modal" id="mStart"><div class="card">
-  <h3>Rit starten</h3>
-  <label class="f">Kenteken</label><input id="kenteken" placeholder="AB-123-C" autocapitalize="characters">
-  <label class="f">Kilometerstand nu (teller auto)</label><input id="kmBegin" type="number" inputmode="numeric" placeholder="bijv. 84210"><p class="sub" id="kmHint"></p>
-  <div class="btns"><button class="btn z" id="sZ">Zakelijk</button><button class="btn p" id="sP">Privé</button></div>
-  <button class="btn full" id="sCancel">Annuleren</button>
+  <h3 data-i="newTrip"></h3>
+  <label class="f" data-i="plate"></label><input id="kenteken" placeholder="AB-123-C" autocapitalize="characters">
+  <label class="f" data-i="odo"></label><input id="kmBegin" type="number" inputmode="numeric" data-p="odoPh"><p class="sub" id="kmHint"></p>
+  <div class="btns"><button class="btn z" id="sZ" data-i="biz"></button><button class="btn p" id="sP" data-i="prv"></button></div>
+  <button class="btn full" id="sCancel" data-i="cancel"></button>
 </div></div>
 
 <div class="modal" id="mStop"><div class="card">
-  <h3>Rit afronden</h3><p class="sub" id="stopInfo"></p>
-  <label class="f">Kilometerstand nu (teller auto)</label><input id="kmEind" type="number" inputmode="numeric">
-  <label class="f">Omschrijving / doel</label><input id="desc" placeholder="Bijv. klantbezoek Amsterdam">
-  <button class="btn go full" id="fSave">Opslaan</button>
-  <button class="btn r full" id="fDiscard">Rit weggooien</button>
+  <h3 data-i="endTrip"></h3><p class="sub" id="stopInfo"></p>
+  <label class="f" data-i="odo"></label><input id="kmEind" type="number" inputmode="numeric">
+  <label class="f" data-i="desc"></label><input id="desc" data-p="descPh">
+  <button class="btn go full" id="fSave" data-i="save"></button>
+  <button class="btn r full" id="fDiscard" data-i="discard"></button>
 </div></div>
 
 <div class="modal" id="mEdit"><div class="card">
-  <h3>Rit aanpassen</h3>
-  <label class="f">Type</label><select id="eType"><option>Zakelijk</option><option>Privé</option></select>
-  <label class="f">Kenteken</label><input id="eKt" autocapitalize="characters">
-  <label class="f">Beginstand</label><input id="eB" type="number" inputmode="numeric">
-  <label class="f">Eindstand</label><input id="eE" type="number" inputmode="numeric">
-  <label class="f">Vertrekadres</label><input id="eSA">
-  <label class="f">Bestemming</label><input id="eEA">
-  <label class="f">Omschrijving</label><input id="eD">
-  <button class="btn go full" id="eSave">Opslaan</button>
-  <div class="btns"><button class="btn r" id="eDel">Verwijderen</button><button class="btn" id="eCancel">Sluiten</button></div>
+  <h3 data-i="edit"></h3>
+  <label class="f" data-i="type"></label><select id="eType"><option value="Zakelijk" data-i="biz"></option><option value="Privé" data-i="prv"></option></select>
+  <label class="f" data-i="plate"></label><input id="eKt" autocapitalize="characters">
+  <label class="f" data-i="begin"></label><input id="eB" type="number" inputmode="numeric">
+  <label class="f" data-i="end"></label><input id="eE" type="number" inputmode="numeric">
+  <label class="f" data-i="from"></label><input id="eSA">
+  <label class="f" data-i="to"></label><input id="eEA">
+  <label class="f" data-i="descS"></label><input id="eD">
+  <button class="btn go full" id="eSave" data-i="save"></button>
+  <div class="btns"><button class="btn r" id="eDel" data-i="del"></button><button class="btn" id="eCancel" data-i="close"></button></div>
 </div></div>
 
 <script>
 var $=function(i){return document.getElementById(i)};
 var sugBegin=null,sugEind=null,db,trips=[],active=null,watchId=null,lastPt=null,wake=null,tick=null,editId=null,looking=false;
+
+
+/* ---------- Talen: en (terugval), nl, fr, tr ---------- */
+var T={
+en:{on:`online`,off:`offline`,dist:`Distance (GPS)`,time:`Time`,prec:`GPS accuracy`,start:`START TRIP`,stop:`STOP TRIP`,km:`Kilometres`,yr:`This year`,mo:`This month`,al:`All`,biz:`Business`,prv:`Private`,tot:`Total`,trips:`Trips`,backup:`Backup`,restore:`Restore`,newTrip:`Start trip`,plate:`Licence plate`,odo:`Current odometer reading (car)`,odoPh:`e.g. 84210`,cancel:`Cancel`,endTrip:`Finish trip`,desc:`Description / purpose`,descPh:`E.g. client visit`,save:`Save`,discard:`Discard trip`,edit:`Edit trip`,type:`Type`,begin:`Start odometer`,end:`End odometer`,from:`Departure address`,to:`Destination`,descS:`Description`,del:`Delete`,close:`Close`,
+nogps:`GPS is not available on this device.`,gpserr:`GPS error: {0} (check Location Services)`,wakeOk:`Keep the app open. The screen stays on automatically.`,wakeNo:`Set Settings › Display › Auto-Lock to Never and keep the app open.`,stopInfo:`GPS distance: {0} km`,stopBeg:` · start {0}`,stopSug:`. End odometer suggested from GPS: check it against the car's odometer and correct it if it differs.`,errLow:`The end odometer is lower than the start odometer.`,confirmDiscard:`Discard this trip permanently?`,nodesc:`No description`,none:`No trips yet. Tap START TRIP.`,from2:`From: `,to2:`To: `,addrSoon:`address will appear once you are online`,unk:`unknown`,odoL:`Odometer: `,est:` (estimated)`,confirmDel:`Delete this trip?`,bk:`💾 Make a backup ({0}). Tap Backup and save the file to Files/iCloud.`,bkLast:`last: {0}`,bkNever:`never made`,restored:`{0} trips restored.`,badFile:`This is not a valid RitManager backup file.`,noStore:`Storage is not available. Open the app from the home screen, not in a private tab.`,w500:`🚨 Private limit reached: {0} km this year (limit 500 km, Dutch rule).`,w400:`⚠️ Heads-up: {0} km private this year. {1} km left until the 500 km limit (Dutch rule).`,calibB:`🔧 The last {0} end odometer readings are GPS estimates. Enter the real odometer reading on your next trip.`,hintCal:`🔧 Recent readings are GPS estimates. Check the car's odometer and enter the real value.`,hintAuto:`Taken from your previous trip. Correct it if it is wrong.`,csvH:`Plate|Date|Start time|End time|Type|Start odometer|End odometer|Kilometres|GPS km|From|To|Description`,csvF:`Trips_`},
+nl:{on:`online`,off:`offline`,dist:`Afstand (GPS)`,time:`Tijd`,prec:`GPS-precisie`,start:`START RIT`,stop:`STOP RIT`,km:`Kilometers`,yr:`Dit jaar`,mo:`Deze maand`,al:`Alles`,biz:`Zakelijk`,prv:`Privé`,tot:`Totaal`,trips:`Ritten`,backup:`Backup`,restore:`Herstel`,newTrip:`Rit starten`,plate:`Kenteken`,odo:`Kilometerstand nu (teller auto)`,odoPh:`bijv. 84210`,cancel:`Annuleren`,endTrip:`Rit afronden`,desc:`Omschrijving / doel`,descPh:`Bijv. klantbezoek Amsterdam`,save:`Opslaan`,discard:`Rit weggooien`,edit:`Rit aanpassen`,type:`Type`,begin:`Beginstand`,end:`Eindstand`,from:`Vertrekadres`,to:`Bestemming`,descS:`Omschrijving`,del:`Verwijderen`,close:`Sluiten`,
+nogps:`Geen GPS beschikbaar op dit toestel.`,gpserr:`GPS-fout: {0} (controleer Locatievoorzieningen)`,wakeOk:`Houd de app open. Het scherm blijft automatisch aan.`,wakeNo:`Zet Instellingen › Scherm › Automatisch vergrendelen op Nooit en houd de app open.`,stopInfo:`GPS-afstand: {0} km`,stopBeg:` · beginstand {0}`,stopSug:`. Eindstand is voorgesteld via GPS: controleer met de teller van de auto en pas aan als die afwijkt.`,errLow:`De eindstand is lager dan de beginstand.`,confirmDiscard:`Deze rit definitief weggooien?`,nodesc:`Geen omschrijving`,none:`Nog geen ritten. Tik op START RIT.`,from2:`Van: `,to2:`Naar: `,addrSoon:`adres volgt zodra je online bent`,unk:`onbekend`,odoL:`Teller: `,est:` (geschat)`,confirmDel:`Deze rit verwijderen?`,bk:`💾 Maak een backup ({0}). Tik op Backup en bewaar het bestand in Bestanden/iCloud.`,bkLast:`laatste: {0}`,bkNever:`nog nooit gemaakt`,restored:`{0} ritten hersteld.`,badFile:`Dit is geen geldig RitManager-backupbestand.`,noStore:`Opslag is niet beschikbaar. Open de app via het beginscherm en niet in een privétabblad.`,w500:`🚨 Privé-grens bereikt: {0} km dit jaar (grens 500 km, Nederlandse regel).`,w400:`⚠️ Let op: {0} km privé dit jaar. Nog {1} km tot de grens van 500 km (Nederlandse regel).`,calibB:`🔧 De laatste {0} eindstanden zijn geschat via GPS. Vul bij je volgende rit de echte stand van de kilometerteller in.`,hintCal:`🔧 De laatste standen zijn geschat via GPS. Kijk nu op de teller van de auto en vul de echte stand in.`,hintAuto:`Automatisch overgenomen van je vorige rit. Pas aan als dat niet klopt.`,csvH:`Kenteken|Datum|Starttijd|Eindtijd|Type|Beginstand|Eindstand|Kilometers|GPS-km|Vertrekadres|Bestemming|Omschrijving`,csvF:`Rittenadministratie_`},
+fr:{on:`en ligne`,off:`hors ligne`,dist:`Distance (GPS)`,time:`Durée`,prec:`Précision GPS`,start:`DÉMARRER LE TRAJET`,stop:`ARRÊTER LE TRAJET`,km:`Kilomètres`,yr:`Cette année`,mo:`Ce mois-ci`,al:`Tout`,biz:`Pro`,prv:`Privé`,tot:`Total`,trips:`Trajets`,backup:`Sauvegarde`,restore:`Restaurer`,newTrip:`Démarrer un trajet`,plate:`Immatriculation`,odo:`Kilométrage actuel (compteur)`,odoPh:`ex. 84210`,cancel:`Annuler`,endTrip:`Terminer le trajet`,desc:`Description / motif`,descPh:`Ex. visite client`,save:`Enregistrer`,discard:`Supprimer le trajet`,edit:`Modifier le trajet`,type:`Type`,begin:`Compteur de départ`,end:`Compteur d'arrivée`,from:`Adresse de départ`,to:`Destination`,descS:`Description`,del:`Supprimer`,close:`Fermer`,
+nogps:`GPS indisponible sur cet appareil.`,gpserr:`Erreur GPS : {0} (vérifiez les services de localisation)`,wakeOk:`Gardez l'app ouverte. L'écran reste allumé automatiquement.`,wakeNo:`Réglages › Affichage › Verrouillage auto : Jamais, et gardez l'app ouverte.`,stopInfo:`Distance GPS : {0} km`,stopBeg:` · départ {0}`,stopSug:`. Compteur d'arrivée proposé via GPS : vérifiez-le avec celui du véhicule et corrigez-le s'il diffère.`,errLow:`Le compteur d'arrivée est inférieur à celui de départ.`,confirmDiscard:`Supprimer définitivement ce trajet ?`,nodesc:`Sans description`,none:`Aucun trajet. Appuyez sur DÉMARRER LE TRAJET.`,from2:`De : `,to2:`À : `,addrSoon:`adresse dès que vous êtes en ligne`,unk:`inconnu`,odoL:`Compteur : `,est:` (estimé)`,confirmDel:`Supprimer ce trajet ?`,bk:`💾 Faites une sauvegarde ({0}). Appuyez sur Sauvegarde et enregistrez le fichier dans Fichiers/iCloud.`,bkLast:`dernière : {0}`,bkNever:`jamais faite`,restored:`{0} trajets restaurés.`,badFile:`Ce n'est pas un fichier de sauvegarde RitManager valide.`,noStore:`Stockage indisponible. Ouvrez l'app depuis l'écran d'accueil, pas en navigation privée.`,w500:`🚨 Limite privée atteinte : {0} km cette année (limite 500 km, règle néerlandaise).`,w400:`⚠️ Attention : {0} km privés cette année. Encore {1} km avant la limite de 500 km (règle néerlandaise).`,calibB:`🔧 Les {0} derniers compteurs d'arrivée sont estimés par GPS. Saisissez le vrai kilométrage au prochain trajet.`,hintCal:`🔧 Les derniers compteurs sont estimés par GPS. Relevez le compteur du véhicule et saisissez la vraie valeur.`,hintAuto:`Repris du trajet précédent. Corrigez-le s'il est faux.`,csvH:`Immatriculation|Date|Heure de début|Heure de fin|Type|Compteur départ|Compteur arrivée|Kilomètres|km GPS|Adresse de départ|Destination|Description`,csvF:`Trajets_`},
+tr:{on:`çevrimiçi`,off:`çevrimdışı`,dist:`Mesafe (GPS)`,time:`Süre`,prec:`GPS hassasiyeti`,start:`SÜRÜŞÜ BAŞLAT`,stop:`SÜRÜŞÜ BİTİR`,km:`Kilometre`,yr:`Bu yıl`,mo:`Bu ay`,al:`Tümü`,biz:`İş`,prv:`Özel`,tot:`Toplam`,trips:`Sürüşler`,backup:`Yedek`,restore:`Geri yükle`,newTrip:`Sürüşü başlat`,plate:`Plaka`,odo:`Şu anki kilometre sayacı (araç)`,odoPh:`örn. 84210`,cancel:`İptal`,endTrip:`Sürüşü tamamla`,desc:`Açıklama / amaç`,descPh:`Örn. müşteri ziyareti`,save:`Kaydet`,discard:`Sürüşü sil`,edit:`Sürüşü düzenle`,type:`Tür`,begin:`Başlangıç sayacı`,end:`Bitiş sayacı`,from:`Çıkış adresi`,to:`Varış adresi`,descS:`Açıklama`,del:`Sil`,close:`Kapat`,
+nogps:`Bu cihazda GPS kullanılamıyor.`,gpserr:`GPS hatası: {0} (Konum Servislerini kontrol edin)`,wakeOk:`Uygulamayı açık tutun. Ekran otomatik olarak açık kalır.`,wakeNo:`Ayarlar › Ekran › Otomatik Kilit: Hiçbir Zaman yapın ve uygulamayı açık tutun.`,stopInfo:`GPS mesafesi: {0} km`,stopBeg:` · başlangıç {0}`,stopSug:`. Bitiş sayacı GPS ile önerildi: aracın sayacıyla karşılaştırın, farklıysa düzeltin.`,errLow:`Bitiş sayacı başlangıç sayacından düşük olamaz.`,confirmDiscard:`Bu sürüş kalıcı olarak silinsin mi?`,nodesc:`Açıklama yok`,none:`Henüz sürüş yok. SÜRÜŞÜ BAŞLAT düğmesine dokunun.`,from2:`Nereden: `,to2:`Nereye: `,addrSoon:`çevrimiçi olunca adres bulunacak`,unk:`bilinmiyor`,odoL:`Sayaç: `,est:` (tahmini)`,confirmDel:`Bu sürüş silinsin mi?`,bk:`💾 Yedek alın ({0}). Yedek düğmesine dokunup dosyayı Dosyalar/iCloud'a kaydedin.`,bkLast:`son: {0}`,bkNever:`hiç alınmadı`,restored:`{0} sürüş geri yüklendi.`,badFile:`Bu geçerli bir RitManager yedek dosyası değil.`,noStore:`Depolama kullanılamıyor. Uygulamayı ana ekrandan açın, gizli sekmeden değil.`,w500:`🚨 Özel sürüş sınırına ulaşıldı: bu yıl {0} km (sınır 500 km, Hollanda kuralı).`,w400:`⚠️ Dikkat: bu yıl {0} km özel sürüş. 500 km sınırına {1} km kaldı (Hollanda kuralı).`,calibB:`🔧 Son {0} bitiş sayacı GPS tahminidir. Bir sonraki sürüşte aracın gerçek sayacını girin.`,hintCal:`🔧 Son sayaç değerleri GPS tahminidir. Aracın sayacına bakıp gerçek değeri girin.`,hintAuto:`Önceki sürüşten otomatik alındı. Yanlışsa düzeltin.`,csvH:`Plaka|Tarih|Başlangıç saati|Bitiş saati|Tür|Başlangıç sayacı|Bitiş sayacı|Kilometre|GPS km|Çıkış adresi|Varış adresi|Açıklama`,csvF:`Surusler_`}
+};
+var LOC=navigator.language||'en',LG=LOC.slice(0,2).toLowerCase();if(!T[LG])LG='en';
+var DEC=',';try{DEC=(1.5).toLocaleString(LOC).indexOf(',')>-1?',':'.'}catch(e){LOC='en'}
+var SEP=DEC===','?';':',';
+function _(k){var s=T[LG][k]!=null?T[LG][k]:T.en[k];for(var i=1;i<arguments.length;i++)s=s.replace('{'+(i-1)+'}',arguments[i]);return s}
+function tp(x){return x==='Zakelijk'?_('biz'):_('prv')}
+function dsc(t){return(!t.desc||t.desc==='Geen omschrijving')?_('nodesc'):t.desc}
+function applyLang(){document.documentElement.lang=LG;
+ Array.prototype.forEach.call(document.querySelectorAll('[data-i]'),function(e){e.textContent=_(e.getAttribute('data-i'))});
+ Array.prototype.forEach.call(document.querySelectorAll('[data-p]'),function(e){e.placeholder=_(e.getAttribute('data-p'))});
+ $('main').textContent=_(driving()?'stop':'start');net();if(!driving())$('km').textContent=fmt('0.0')}
 
 /* ---------- Opslag (IndexedDB) ---------- */
 function idb(){return new Promise(function(res,rej){var r=indexedDB.open('ritmanager',1);
@@ -127,8 +150,8 @@ var del=function(s,k){return tx(s,'readwrite',function(o){return o.delete(k)})};
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
 function num(v){var n=parseInt(v,10);return isNaN(n)?null:n}
 function q(v){return v==null?'?':v}
-function fmt(n){return String(n).replace('.',',')}
-function hm(d){return d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}
+function fmt(n){return String(n).replace('.',DEC)}
+function hm(d){return d.toLocaleTimeString(LOC,{hour:'2-digit',minute:'2-digit'})}
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
 function openM(id){$(id).classList.add('on')}function closeM(id){$(id).classList.remove('on')}
 function dist(a,b){var R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*r;
@@ -140,7 +163,7 @@ function estCount(){var s=trips.slice().sort(function(a,b){return b.id-a.id}),c=
  for(var i=0;i<s.length;i++){if(!s[i].eindGps)break;c++;if(s[i].begReal)break}return c}
 function totals(){
  var ec=estCount(),cw=$('calib');
- if(ec>=5){cw.hidden=false;cw.textContent='🔧 De laatste '+ec+' eindstanden zijn geschat via GPS. Vul bij je volgende rit de echte stand van de kilometerteller in.'}else cw.hidden=true;
+ if(ec>=5){cw.hidden=false;cw.textContent=_('calibB',ec)}else cw.hidden=true;
  var p=$('per').value,n=new Date(),z=0,pr=0;
  trips.forEach(function(t){var d=new Date(t.start);
   if(p==='y'&&d.getFullYear()!==n.getFullYear())return;
@@ -148,8 +171,8 @@ function totals(){
   if(t.type==='Zakelijk')z+=km(t);else pr+=km(t)});
  var jp=0;trips.forEach(function(t){if(t.type!=='Zakelijk'&&new Date(t.start).getFullYear()===n.getFullYear())jp+=km(t)});
  jp=Math.round(jp*10)/10;var w=$('warn');
- if(jp>=500){w.hidden=false;w.className='warn red';w.textContent='🚨 Privé-grens bereikt: '+fmt(jp)+' km dit jaar (grens 500 km).'}
- else if(jp>=400){w.hidden=false;w.className='warn';w.textContent='⚠️ Let op: '+fmt(jp)+' km privé dit jaar. Nog '+fmt(Math.round((500-jp)*10)/10)+' km tot de grens van 500 km.'}
+ if(jp>=500){w.hidden=false;w.className='warn red';w.textContent=_('w500',fmt(jp))}
+ else if(jp>=400){w.hidden=false;w.className='warn';w.textContent=_('w400',fmt(jp),fmt(Math.round((500-jp)*10)/10))}
  else w.hidden=true;
  z=Math.round(z*10)/10;pr=Math.round(pr*10)/10;
  $('tZ').textContent=fmt(z);$('tP').textContent=fmt(pr);$('tT').textContent=fmt(Math.round((z+pr)*10)/10);
@@ -166,8 +189,8 @@ async function startTrip(type){
 }
 function runTrip(){
  setDriving(true);lastPt=active.eLat!=null?{lat:active.eLat,lng:active.eLng,t:Date.now()}:null;
- if(!navigator.geolocation){$('note').textContent='Geen GPS beschikbaar op dit toestel.';return}
- watchId=navigator.geolocation.watchPosition(onPos,function(e){$('note').textContent='GPS-fout: '+e.message+' (controleer Locatievoorzieningen)'},{enableHighAccuracy:true,maximumAge:0,timeout:30000});
+ if(!navigator.geolocation){$('note').textContent=_('nogps');return}
+ watchId=navigator.geolocation.watchPosition(onPos,function(e){$('note').textContent=_('gpserr',e.message)},{enableHighAccuracy:true,maximumAge:0,timeout:30000});
  lock();clearInterval(tick);tick=setInterval(showTime,1000);showTime();
 }
 function onPos(p){
@@ -185,9 +208,9 @@ function onPos(p){
 }
 function showTime(){if(!active)return;var s=Math.floor((Date.now()-new Date(active.start))/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);
  $('time').textContent=(h?h+':':'')+String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function setDriving(on){var b=$('main');b.classList.toggle('on',on);b.textContent=on?'STOP RIT':'START RIT';
- $('note').textContent=on?('wakeLock' in navigator?'Houd de app open. Het scherm blijft automatisch aan.':'Zet Instellingen › Scherm › Automatisch vergrendelen op Nooit en houd de app open.'):'';
- if(!on){$('km').textContent='0,0';$('time').textContent='00:00';$('acc').textContent='–'}}
+function setDriving(on){var b=$('main');b.classList.toggle('on',on);b.textContent=_(on?'stop':'start');
+ $('note').textContent=on?_('wakeLock' in navigator?'wakeOk':'wakeNo'):'';
+ if(!on){$('km').textContent=fmt('0.0');$('time').textContent='00:00';$('acc').textContent='–'}}
 async function lock(){try{if('wakeLock' in navigator&&driving())wake=await navigator.wakeLock.request('screen')}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&driving())lock()});
 
@@ -198,48 +221,48 @@ async function stopTrip(){
 }
 function openStop(){
  sugEind=active.kmBegin!=null?active.kmBegin+Math.round(active.gps):null;
- $('stopInfo').textContent='GPS-afstand: '+fmt(active.gps.toFixed(1))+' km'+(active.kmBegin!=null?' · beginstand '+active.kmBegin:'')+(sugEind!=null?'. Eindstand is voorgesteld via GPS: controleer met de teller van de auto en pas aan als die afwijkt.':'');
+ $('stopInfo').textContent=_('stopInfo',fmt(active.gps.toFixed(1)))+(active.kmBegin!=null?_('stopBeg',active.kmBegin):'')+(sugEind!=null?_('stopSug'):'');
  $('kmEind').value=sugEind==null?'':sugEind;$('desc').value='';openM('mStop');
 }
 async function finishTrip(){
  var e=num($('kmEind').value);
- if(e!=null&&active.kmBegin!=null&&e<active.kmBegin){alert('De eindstand is lager dan de beginstand.');return}
- active.kmEind=e;active.eindGps=e!=null&&e===sugEind;active.desc=$('desc').value.trim()||'Geen omschrijving';active.gps=Math.round(active.gps*1000)/1000;
+ if(e!=null&&active.kmBegin!=null&&e<active.kmBegin){alert(_('errLow'));return}
+ active.kmEind=e;active.eindGps=e!=null&&e===sugEind;active.desc=$('desc').value.trim();active.gps=Math.round(active.gps*1000)/1000;
  await put('trips',active);await del('kv','active');active=null;
  closeM('mStop');await load();lookup();banner();
 }
-async function discardTrip(){if(!confirm('Deze rit definitief weggooien?'))return;await del('kv','active');active=null;closeM('mStop')}
+async function discardTrip(){if(!confirm(_('confirmDiscard')))return;await del('kv','active');active=null;closeM('mStop')}
 
 /* ---------- Lijst ---------- */
 async function load(){trips=await all('trips');render()}
 function render(){
  totals();var L=$('list');L.textContent='';
- if(!trips.length)L.appendChild(el('p','note','Nog geen ritten. Tik op START RIT.'));
+ if(!trips.length)L.appendChild(el('p','note',_('none')));
  trips.slice().sort(function(a,b){return b.id-a.id}).forEach(function(t){
   var d=new Date(t.start),e=t.end?new Date(t.end):null,it=el('div','trip'),h=el('div','th');
-  h.appendChild(el('span','badge '+(t.type==='Zakelijk'?'z':'p'),t.type));h.appendChild(el('b',null,fmt(km(t))+' km'));it.appendChild(h);
-  it.appendChild(el('div','sub',d.toLocaleDateString('nl-NL')+' '+hm(d)+(e?' – '+hm(e):'')+(t.kenteken?' · '+t.kenteken:'')));
-  it.appendChild(el('div','sub','Van: '+(t.sAddr||(t.sLat!=null?'adres volgt zodra je online bent':'onbekend'))));
-  it.appendChild(el('div','sub','Naar: '+(t.eAddr||(t.eLat!=null?'adres volgt zodra je online bent':'onbekend'))));
-  it.appendChild(el('div','sub','Teller: '+q(t.kmBegin)+' → '+q(t.kmEind)+(t.eindGps?' (geschat)':'')+' · GPS: '+fmt(t.gps.toFixed(1))+' km'));
-  it.appendChild(el('div','d',t.desc));
+  h.appendChild(el('span','badge '+(t.type==='Zakelijk'?'z':'p'),tp(t.type)));h.appendChild(el('b',null,fmt(km(t))+' km'));it.appendChild(h);
+  it.appendChild(el('div','sub',d.toLocaleDateString(LOC)+' '+hm(d)+(e?' – '+hm(e):'')+(t.kenteken?' · '+t.kenteken:'')));
+  it.appendChild(el('div','sub',_('from2')+(t.sAddr||(t.sLat!=null?_('addrSoon'):_('unk')))));
+  it.appendChild(el('div','sub',_('to2')+(t.eAddr||(t.eLat!=null?_('addrSoon'):_('unk')))));
+  it.appendChild(el('div','sub',_('odoL')+q(t.kmBegin)+' → '+q(t.kmEind)+(t.eindGps?_('est'):'')+' · GPS: '+fmt(t.gps.toFixed(1))+' km'));
+  it.appendChild(el('div','d',dsc(t)));
   it.onclick=function(){openEdit(t.id)};L.appendChild(it)});
 }
 function openEdit(id){
  var t=trips.filter(function(x){return x.id===id})[0];if(!t)return;editId=id;
  $('eType').value=t.type;$('eKt').value=t.kenteken||'';$('eB').value=t.kmBegin==null?'':t.kmBegin;$('eE').value=t.kmEind==null?'':t.kmEind;
- $('eSA').value=t.sAddr||'';$('eEA').value=t.eAddr||'';$('eD').value=t.desc;openM('mEdit');
+ $('eSA').value=t.sAddr||'';$('eEA').value=t.eAddr||'';$('eD').value=t.desc==='Geen omschrijving'?'':t.desc;openM('mEdit');
 }
 async function saveEdit(){
  var t=trips.filter(function(x){return x.id===editId})[0];
  t.type=$('eType').value;t.kenteken=$('eKt').value.trim().toUpperCase();t.kmBegin=num($('eB').value);var ne=num($('eE').value);if(ne!==t.kmEind)t.eindGps=false;t.kmEind=ne;
- t.sAddr=$('eSA').value.trim();t.eAddr=$('eEA').value.trim();t.desc=$('eD').value.trim()||'Geen omschrijving';
+ t.sAddr=$('eSA').value.trim();t.eAddr=$('eEA').value.trim();t.desc=$('eD').value.trim();
  await put('trips',t);closeM('mEdit');render();
 }
-async function delTrip(){if(!confirm('Deze rit verwijderen?'))return;await del('trips',editId);closeM('mEdit');await load();banner()}
+async function delTrip(){if(!confirm(_('confirmDel')))return;await del('trips',editId);closeM('mEdit');await load();banner()}
 
 /* ---------- Adressen opzoeken zodra er wifi is (OpenStreetMap, gratis) ---------- */
-async function rev(la,lo){try{var r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=nl&lat='+la+'&lon='+lo);
+async function rev(la,lo){try{var r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language='+LG+'&lat='+la+'&lon='+lo);
  if(!r.ok)return '';var a=(await r.json()).address||{};
  return [((a.road||'')+(a.house_number?' '+a.house_number:'')).trim(),a.postcode||'',a.city||a.town||a.village||''].filter(Boolean).join(', ')}catch(e){return ''}}
 async function lookup(){
@@ -259,10 +282,10 @@ async function out(name,text,type){
  var a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();a.remove();return true;
 }
 async function exportCsv(){
- var rows=['Kenteken;Datum;Starttijd;Eindtijd;Type;Beginstand;Eindstand;Kilometers;GPS-km;Vertrekadres;Bestemming;Omschrijving'];
+ var rows=[_('csvH').split('|').join(SEP)];
  trips.slice().sort(function(a,b){return a.id-b.id}).forEach(function(t){var d=new Date(t.start),e=t.end?new Date(t.end):null;
-  rows.push([t.kenteken,d.toLocaleDateString('nl-NL'),hm(d),e?hm(e):'',t.type,t.kmBegin,t.kmEind,fmt(km(t)),fmt(t.gps.toFixed(2)),t.sAddr,t.eAddr,t.desc].map(cell).join(';'))});
- await out('Rittenadministratie_'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.join('\r\n'),'text/csv');
+  rows.push([t.kenteken,d.toLocaleDateString(LOC),hm(d),e?hm(e):'',tp(t.type),t.kmBegin,t.kmEind,fmt(km(t)),fmt(t.gps.toFixed(2)),t.sAddr,t.eAddr,dsc(t)].map(cell).join(SEP))});
+ await out(_('csvF')+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.join('\r\n'),'text/csv');
 }
 async function exportJson(){
  var ok=await out('RitManager_backup_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({v:1,trips:trips}),'application/json');
@@ -271,21 +294,22 @@ async function exportJson(){
 async function importJson(ev){
  var f=ev.target.files[0];if(!f)return;
  try{var j=JSON.parse(await f.text());if(!j.trips||!j.trips.length)throw 0;
-  for(var i=0;i<j.trips.length;i++)await put('trips',j.trips[i]);await load();banner();alert(j.trips.length+' ritten hersteld.')}
- catch(e){alert('Dit is geen geldig RitManager-backupbestand.')}
+  for(var i=0;i<j.trips.length;i++)await put('trips',j.trips[i]);await load();banner();alert(_('restored',j.trips.length))}
+ catch(e){alert(_('badFile'))}
  ev.target.value='';
 }
 async function banner(){
  var b=$('banner'),lb=await get('kv','lastBackup'),old=!lb||Date.now()-lb>7*864e5;
- if(trips.length&&old){b.hidden=false;b.textContent='💾 Maak een backup ('+(lb?'laatste: '+new Date(lb).toLocaleDateString('nl-NL'):'nog nooit gemaakt')+'). Tik op Backup en bewaar het bestand in Bestanden/iCloud.'}else b.hidden=true;
+ if(trips.length&&old){b.hidden=false;b.textContent=_('bk',lb?_('bkLast',new Date(lb).toLocaleDateString(LOC)):_('bkNever'))}else b.hidden=true;
 }
 
 /* ---------- Start ---------- */
-function net(){var n=$('net');n.textContent=navigator.onLine?'online':'offline';n.className='pill'+(navigator.onLine?'':' off')}
-window.addEventListener('online',function(){net();lookup()});window.addEventListener('offline',net);
+function net(){var n=$('net');n.textContent=_(navigator.onLine?'on':'off');n.className='pill'+(navigator.onLine?'':' off')}
+window.addEventListener('online',function(){net();lookup()});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){net();lookup()}});window.addEventListener('offline',net);
 $('main').onclick=function(){if(driving())return stopTrip();
  var l=lastEind();sugBegin=l;$('kmBegin').value=l==null?'':l;
- $('kmHint').textContent=l==null?'':(estCount()>=5?'🔧 De laatste standen zijn geschat via GPS. Kijk nu op de teller van de auto en vul de echte stand in.':'Automatisch overgenomen van je vorige rit. Pas aan als dat niet klopt.');openM('mStart')};
+ $('kmHint').textContent=l==null?'':(estCount()>=5?_('hintCal'):_('hintAuto'));openM('mStart')};
 $('per').onchange=totals;
 $('sZ').onclick=function(){startTrip('Zakelijk')};$('sP').onclick=function(){startTrip('Privé')};$('sCancel').onclick=function(){closeM('mStart')};
 $('fSave').onclick=finishTrip;$('fDiscard').onclick=discardTrip;
@@ -293,8 +317,8 @@ $('eSave').onclick=saveEdit;$('eDel').onclick=delTrip;$('eCancel').onclick=funct
 $('bCsv').onclick=exportCsv;$('bJson').onclick=exportJson;$('fImp').onchange=importJson;
 
 (async function(){
- net();
- try{await idb()}catch(e){alert('Opslag is niet beschikbaar. Open de app via het beginscherm en niet in een privétabblad.');return}
+ applyLang();
+ try{await idb()}catch(e){alert(_('noStore'));return}
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
  var kt=await get('kv','kenteken');if(kt)$('kenteken').value=kt;
  await load();active=(await get('kv','active'))||null;
