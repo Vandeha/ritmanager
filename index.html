@@ -59,6 +59,7 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
   <header><span>🚗 RitManager</span><span id="net" class="pill">online</span></header>
   <div id="banner" class="banner" hidden></div>
   <div id="warn" class="warn" hidden></div>
+  <div id="calib" class="warn" hidden></div>
   <section class="card">
     <div class="stats">
       <div><small>Afstand (GPS)</small><b id="km">0,0</b></div>
@@ -109,7 +110,7 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
 
 <script>
 var $=function(i){return document.getElementById(i)};
-var db,trips=[],active=null,watchId=null,lastPt=null,wake=null,tick=null,editId=null,looking=false;
+var sugBegin=null,sugEind=null,db,trips=[],active=null,watchId=null,lastPt=null,wake=null,tick=null,editId=null,looking=false;
 
 /* ---------- Opslag (IndexedDB) ---------- */
 function idb(){return new Promise(function(res,rej){var r=indexedDB.open('ritmanager',1);
@@ -135,7 +136,11 @@ function dist(a,b){var R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*
  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
 function km(t){return t.kmBegin!=null&&t.kmEind!=null?t.kmEind-t.kmBegin:Math.round(t.gps*10)/10}
 function lastEind(){var s=trips.filter(function(t){return t.kmEind!=null}).sort(function(a,b){return b.id-a.id});return s.length?s[0].kmEind:null}
+function estCount(){var s=trips.slice().sort(function(a,b){return b.id-a.id}),c=0;
+ for(var i=0;i<s.length;i++){if(!s[i].eindGps)break;c++;if(s[i].begReal)break}return c}
 function totals(){
+ var ec=estCount(),cw=$('calib');
+ if(ec>=5){cw.hidden=false;cw.textContent='🔧 De laatste '+ec+' eindstanden zijn geschat via GPS. Vul bij je volgende rit de echte stand van de kilometerteller in.'}else cw.hidden=true;
  var p=$('per').value,n=new Date(),z=0,pr=0;
  trips.forEach(function(t){var d=new Date(t.start);
   if(p==='y'&&d.getFullYear()!==n.getFullYear())return;
@@ -154,7 +159,7 @@ function driving(){return active&&!active.end}
 /* ---------- Rit starten / bijhouden ---------- */
 async function startTrip(type){
  var kt=$('kenteken').value.trim().toUpperCase();
- active={id:Date.now(),start:new Date().toISOString(),end:null,type:type,kenteken:kt,kmBegin:num($('kmBegin').value),kmEind:null,
+ active={id:Date.now(),start:new Date().toISOString(),end:null,type:type,kenteken:kt,kmBegin:num($('kmBegin').value),begReal:sugBegin==null||num($('kmBegin').value)!==sugBegin,kmEind:null,
   gps:0,sLat:null,sLng:null,eLat:null,eLng:null,sAddr:'',eAddr:'',desc:''};
  await put('kv',kt,'kenteken');await put('kv',active,'active');
  closeM('mStart');runTrip();
@@ -192,13 +197,14 @@ async function stopTrip(){
  active.end=new Date().toISOString();await put('kv',active,'active');setDriving(false);openStop();
 }
 function openStop(){
- $('stopInfo').textContent='GPS-afstand: '+fmt(active.gps.toFixed(1))+' km'+(active.kmBegin!=null?' · beginstand '+active.kmBegin:'');
- $('kmEind').value='';$('desc').value='';openM('mStop');
+ sugEind=active.kmBegin!=null?active.kmBegin+Math.round(active.gps):null;
+ $('stopInfo').textContent='GPS-afstand: '+fmt(active.gps.toFixed(1))+' km'+(active.kmBegin!=null?' · beginstand '+active.kmBegin:'')+(sugEind!=null?'. Eindstand is voorgesteld via GPS: controleer met de teller van de auto en pas aan als die afwijkt.':'');
+ $('kmEind').value=sugEind==null?'':sugEind;$('desc').value='';openM('mStop');
 }
 async function finishTrip(){
  var e=num($('kmEind').value);
  if(e!=null&&active.kmBegin!=null&&e<active.kmBegin){alert('De eindstand is lager dan de beginstand.');return}
- active.kmEind=e;active.desc=$('desc').value.trim()||'Geen omschrijving';active.gps=Math.round(active.gps*1000)/1000;
+ active.kmEind=e;active.eindGps=e!=null&&e===sugEind;active.desc=$('desc').value.trim()||'Geen omschrijving';active.gps=Math.round(active.gps*1000)/1000;
  await put('trips',active);await del('kv','active');active=null;
  closeM('mStop');await load();lookup();banner();
 }
@@ -215,7 +221,7 @@ function render(){
   it.appendChild(el('div','sub',d.toLocaleDateString('nl-NL')+' '+hm(d)+(e?' – '+hm(e):'')+(t.kenteken?' · '+t.kenteken:'')));
   it.appendChild(el('div','sub','Van: '+(t.sAddr||(t.sLat!=null?'adres volgt zodra je online bent':'onbekend'))));
   it.appendChild(el('div','sub','Naar: '+(t.eAddr||(t.eLat!=null?'adres volgt zodra je online bent':'onbekend'))));
-  it.appendChild(el('div','sub','Teller: '+q(t.kmBegin)+' → '+q(t.kmEind)+' · GPS: '+fmt(t.gps.toFixed(1))+' km'));
+  it.appendChild(el('div','sub','Teller: '+q(t.kmBegin)+' → '+q(t.kmEind)+(t.eindGps?' (geschat)':'')+' · GPS: '+fmt(t.gps.toFixed(1))+' km'));
   it.appendChild(el('div','d',t.desc));
   it.onclick=function(){openEdit(t.id)};L.appendChild(it)});
 }
@@ -226,7 +232,7 @@ function openEdit(id){
 }
 async function saveEdit(){
  var t=trips.filter(function(x){return x.id===editId})[0];
- t.type=$('eType').value;t.kenteken=$('eKt').value.trim().toUpperCase();t.kmBegin=num($('eB').value);t.kmEind=num($('eE').value);
+ t.type=$('eType').value;t.kenteken=$('eKt').value.trim().toUpperCase();t.kmBegin=num($('eB').value);var ne=num($('eE').value);if(ne!==t.kmEind)t.eindGps=false;t.kmEind=ne;
  t.sAddr=$('eSA').value.trim();t.eAddr=$('eEA').value.trim();t.desc=$('eD').value.trim()||'Geen omschrijving';
  await put('trips',t);closeM('mEdit');render();
 }
@@ -278,7 +284,8 @@ async function banner(){
 function net(){var n=$('net');n.textContent=navigator.onLine?'online':'offline';n.className='pill'+(navigator.onLine?'':' off')}
 window.addEventListener('online',function(){net();lookup()});window.addEventListener('offline',net);
 $('main').onclick=function(){if(driving())return stopTrip();
- var l=lastEind();$('kmBegin').value=l==null?'':l;$('kmHint').textContent=l==null?'':'Automatisch overgenomen van je vorige rit. Pas aan als dat niet klopt.';openM('mStart')};
+ var l=lastEind();sugBegin=l;$('kmBegin').value=l==null?'':l;
+ $('kmHint').textContent=l==null?'':(estCount()>=5?'🔧 De laatste standen zijn geschat via GPS. Kijk nu op de teller van de auto en vul de echte stand in.':'Automatisch overgenomen van je vorige rit. Pas aan als dat niet klopt.');openM('mStart')};
 $('per').onchange=totals;
 $('sZ').onclick=function(){startTrip('Zakelijk')};$('sP').onclick=function(){startTrip('Privé')};$('sCancel').onclick=function(){closeM('mStart')};
 $('fSave').onclick=finishTrip;$('fDiscard').onclick=discardTrip;
