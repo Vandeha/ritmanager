@@ -48,12 +48,17 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
 .btn.z{background:#00b7e633;color:var(--blue)}.btn.p{background:#ff3d8b33;color:var(--pink)}
 .btn.go{background:var(--blue);color:#04202b;border:0}.btn.r{color:var(--red)}
 .btn.full{margin-top:10px}
+.warn{border-radius:14px;padding:10px 12px;font-size:.88rem;font-weight:600;background:#3b2f0b;border:1px solid #a16207;color:#fde68a}
+.warn.red{background:#3b0d0d;border-color:#b91c1c;color:#fecaca}
+.tot .stats{margin:12px 0 0}
+#per{width:auto;padding:6px 10px;font-size:.85rem}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header><span>🚗 RitManager</span><span id="net" class="pill">online</span></header>
   <div id="banner" class="banner" hidden></div>
+  <div id="warn" class="warn" hidden></div>
   <section class="card">
     <div class="stats">
       <div><small>Afstand (GPS)</small><b id="km">0,0</b></div>
@@ -62,6 +67,10 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
     </div>
     <button id="main" class="main">START RIT</button>
     <p id="note" class="note"></p>
+  </section>
+  <section class="card tot">
+    <div class="row"><b>Kilometers</b><select id="per"><option value="y">Dit jaar</option><option value="m">Deze maand</option><option value="a">Alles</option></select></div>
+    <div class="stats"><div><small>Zakelijk</small><b id="tZ">0</b></div><div><small>Privé</small><b id="tP">0</b></div><div><small>Totaal</small><b id="tT">0</b></div></div>
   </section>
   <div class="row"><h2>Ritten</h2>
     <div><button class="sm" id="bCsv">CSV</button><button class="sm" id="bJson">Backup</button><label class="sm">Herstel<input type="file" id="fImp" accept=".json,application/json" hidden></label></div>
@@ -72,7 +81,7 @@ input,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--l
 <div class="modal" id="mStart"><div class="card">
   <h3>Rit starten</h3>
   <label class="f">Kenteken</label><input id="kenteken" placeholder="AB-123-C" autocapitalize="characters">
-  <label class="f">Kilometerstand nu (teller auto)</label><input id="kmBegin" type="number" inputmode="numeric" placeholder="bijv. 84210">
+  <label class="f">Kilometerstand nu (teller auto)</label><input id="kmBegin" type="number" inputmode="numeric" placeholder="bijv. 84210"><p class="sub" id="kmHint"></p>
   <div class="btns"><button class="btn z" id="sZ">Zakelijk</button><button class="btn p" id="sP">Privé</button></div>
   <button class="btn full" id="sCancel">Annuleren</button>
 </div></div>
@@ -125,6 +134,21 @@ function dist(a,b){var R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*
  var x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)*Math.sin(dn/2);
  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
 function km(t){return t.kmBegin!=null&&t.kmEind!=null?t.kmEind-t.kmBegin:Math.round(t.gps*10)/10}
+function lastEind(){var s=trips.filter(function(t){return t.kmEind!=null}).sort(function(a,b){return b.id-a.id});return s.length?s[0].kmEind:null}
+function totals(){
+ var p=$('per').value,n=new Date(),z=0,pr=0;
+ trips.forEach(function(t){var d=new Date(t.start);
+  if(p==='y'&&d.getFullYear()!==n.getFullYear())return;
+  if(p==='m'&&(d.getFullYear()!==n.getFullYear()||d.getMonth()!==n.getMonth()))return;
+  if(t.type==='Zakelijk')z+=km(t);else pr+=km(t)});
+ var jp=0;trips.forEach(function(t){if(t.type!=='Zakelijk'&&new Date(t.start).getFullYear()===n.getFullYear())jp+=km(t)});
+ jp=Math.round(jp*10)/10;var w=$('warn');
+ if(jp>=500){w.hidden=false;w.className='warn red';w.textContent='🚨 Privé-grens bereikt: '+fmt(jp)+' km dit jaar (grens 500 km).'}
+ else if(jp>=400){w.hidden=false;w.className='warn';w.textContent='⚠️ Let op: '+fmt(jp)+' km privé dit jaar. Nog '+fmt(Math.round((500-jp)*10)/10)+' km tot de grens van 500 km.'}
+ else w.hidden=true;
+ z=Math.round(z*10)/10;pr=Math.round(pr*10)/10;
+ $('tZ').textContent=fmt(z);$('tP').textContent=fmt(pr);$('tT').textContent=fmt(Math.round((z+pr)*10)/10);
+}
 function driving(){return active&&!active.end}
 
 /* ---------- Rit starten / bijhouden ---------- */
@@ -183,7 +207,7 @@ async function discardTrip(){if(!confirm('Deze rit definitief weggooien?'))retur
 /* ---------- Lijst ---------- */
 async function load(){trips=await all('trips');render()}
 function render(){
- var L=$('list');L.textContent='';
+ totals();var L=$('list');L.textContent='';
  if(!trips.length)L.appendChild(el('p','note','Nog geen ritten. Tik op START RIT.'));
  trips.slice().sort(function(a,b){return b.id-a.id}).forEach(function(t){
   var d=new Date(t.start),e=t.end?new Date(t.end):null,it=el('div','trip'),h=el('div','th');
@@ -253,7 +277,9 @@ async function banner(){
 /* ---------- Start ---------- */
 function net(){var n=$('net');n.textContent=navigator.onLine?'online':'offline';n.className='pill'+(navigator.onLine?'':' off')}
 window.addEventListener('online',function(){net();lookup()});window.addEventListener('offline',net);
-$('main').onclick=function(){driving()?stopTrip():openM('mStart')};
+$('main').onclick=function(){if(driving())return stopTrip();
+ var l=lastEind();$('kmBegin').value=l==null?'':l;$('kmHint').textContent=l==null?'':'Automatisch overgenomen van je vorige rit. Pas aan als dat niet klopt.';openM('mStart')};
+$('per').onchange=totals;
 $('sZ').onclick=function(){startTrip('Zakelijk')};$('sP').onclick=function(){startTrip('Privé')};$('sCancel').onclick=function(){closeM('mStart')};
 $('fSave').onclick=finishTrip;$('fDiscard').onclick=discardTrip;
 $('eSave').onclick=saveEdit;$('eDel').onclick=delTrip;$('eCancel').onclick=function(){closeM('mEdit')};
